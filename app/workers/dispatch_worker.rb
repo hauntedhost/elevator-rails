@@ -29,11 +29,11 @@ class DispatchWorker
   def advance_cabs
     cabs = Cab.in_transit
     cabs.each do |cab|
-      current_floor = cab.current_floor - .25
-      match = cab.calls.where(from_floor: current_floor)
-      if match
+      # current_floor = cab.current_floor - .25
+      # match = cab.calls.where(from_floor: current_floor)
+      # if match
 
-      if 
+      # if 
 
       # if current_floor == cab.calls.last
     end
