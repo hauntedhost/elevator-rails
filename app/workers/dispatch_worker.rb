@@ -4,7 +4,6 @@ class DispatchWorker
   def assign_cabs
     unassigned_calls = CabCall.unassigned
     unassigned_calls.each do |call|
-      # call = direction: down, from_floor: 7
       direction = call.direction
       from_floor = call.from_floor
 
@@ -16,9 +15,9 @@ class DispatchWorker
       end
 
       # otherwise assign to cab:
-      # with least amount of floors left to travel
-      # with closest final destination
-      # including additional queued calls
+      # 1. with least amount of floors left to travel
+      # 2. with closest final destination
+      # calculation needs to include queued calls after elevator turns around
 
       cabs = Cab.by_proximity(from_floor)
       cabs.each do |cab|
@@ -49,9 +48,9 @@ class DispatchWorker
 
         assign_cabs
 
-        # TODO: break should happen when all cabs are idle
-        # unassigned_calls = CabCall.unassigned
-        # break if unassigned_calls.empty?
+        # TODO: break should happen when:
+        # 1. all cabs are idle
+        # 2. no unassigned calls
         break if CabCall.unassigned.empty?
 
         sleep 1

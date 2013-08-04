@@ -10,6 +10,7 @@
 #  updated_at    :datetime         not null
 #
 
+# status: [idle, transit]
 class Cab < ActiveRecord::Base
   attr_accessible :current_floor, :direction, :status
   # scope :in_transit, :where(:status => "transit")
@@ -19,6 +20,7 @@ class Cab < ActiveRecord::Base
     Cab.where(:status => "transit")
   end
 
+  # cabs nearest floor_n and/or traveling toward floor_n
   def self.nearest(floor_num, direction)
     operator = (direction == "up") ? "<" : ">"
     cabs = Cab.where(:direction => [direction, "none"]).

@@ -11,6 +11,7 @@
 #  updated_at :datetime         not null
 #
 
+#status [active, complete]
 class CabCall < ActiveRecord::Base
   attr_accessible :cab_id, :direction, :from_floor, :status
   scope :unassigned, where(:cab_id => nil) #.order("created_at DESC")

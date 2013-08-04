@@ -32,11 +32,17 @@ current_floor: decimal
 direction: [up, down, none]
 status: [idle, transit]
 
-calls:
+cab_calls:
 from_floor: 3
 direction: up
 cab_id: 1
 status: [active, complete]  # unassigned, assigned, 
+
+#cab_calls -- 
+it doesn't really matter if the cab call is from outside or inside
+the main difference:
+1. cab calls created outside are unassigned
+2. cab calls built inside are assigned
 
 
 
