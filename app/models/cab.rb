@@ -2,17 +2,18 @@
 #
 # Table name: cabs
 #
-#  id            :integer          not null, primary key
-#  current_floor :integer          not null
-#  direction     :string(255)
-#  status        :string(255)      not null
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
+#  id                 :integer          not null, primary key
+#  current_floor      :integer          not null
+#  current_direction  :string(255)
+#  status             :string(255)      not null
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  reserved_direction :string(255)
 #
 
 # status: [idle, transit]
 class Cab < ActiveRecord::Base
-  attr_accessible :current_floor, :direction, :status
+  attr_accessible :current_floor, :status
   # scope :in_transit, :where(:status => "transit")
   has_many :calls, :class_name => "CabCall"
 
@@ -23,7 +24,7 @@ class Cab < ActiveRecord::Base
   # cabs nearest floor_n and/or traveling toward floor_n
   def self.nearest(floor_num, direction)
     operator = (direction == "up") ? "<" : ">"
-    cabs = Cab.where(:direction => [direction, "none"]).
+    cabs = Cab.where(:reserved_direction => [direction, "none"]).
                where("current_floor #{operator} #{floor_num}")
     cabs.sort do |a, b|
       (a.current_floor - floor_num).abs <=> (b.current_floor - floor_num).abs

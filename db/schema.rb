@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130804065642) do
+ActiveRecord::Schema.define(:version => 20130804210955) do
 
   create_table "cab_calls", :force => true do |t|
     t.integer  "from_floor", :null => false
@@ -23,11 +23,12 @@ ActiveRecord::Schema.define(:version => 20130804065642) do
   end
 
   create_table "cabs", :force => true do |t|
-    t.integer  "current_floor", :null => false
-    t.string   "direction"
-    t.string   "status",        :null => false
-    t.datetime "created_at",    :null => false
-    t.datetime "updated_at",    :null => false
+    t.integer  "current_floor",      :null => false
+    t.string   "current_direction"
+    t.string   "status",             :null => false
+    t.datetime "created_at",         :null => false
+    t.datetime "updated_at",         :null => false
+    t.string   "reserved_direction"
   end
 
 end
