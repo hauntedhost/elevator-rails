@@ -1,4 +1,5 @@
-whats the problem?
+NOTES:
+======
 
 i have the ability to spawn separate jobs that are both running simultaneously every second. note: i also may only need to spawn a single dispatch job that runs every second forever.
 
@@ -9,7 +10,7 @@ so what do these jobs do?
   two checks:
     * calls between my location and next destination
     * cabs that are closer than me and available
-3. 
+3. PROFIT
 
 maybe we have an elevator model with elevators
   position: 1.5 | direction: down

@@ -2,26 +2,27 @@
 #
 # Table name: cab_calls
 #
-#  id         :integer          not null, primary key
-#  from_floor :integer          not null
-#  direction  :string(255)      not null
-#  cab_id     :integer
-#  status     :string(255)
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id              :integer          not null, primary key
+#  requested_floor :integer          not null
+#  direction       :string(255)      not null
+#  cab_id          :integer
+#  status          :string(255)
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
 #
 
-#status [active, complete]
 class CabCall < ActiveRecord::Base
-  attr_accessible :cab_id, :direction, :from_floor, :status
-  scope :unassigned, where(:cab_id => nil) #.order("created_at DESC")
-  scope :active, where(:status => "active").order("created_at DESC")
-  before_save :set_status
-
+  attr_accessible :cab_id, :direction, :requested_floor, :status
+  validates_inclusion_of :status, :in => ["pending", "complete"]
+  before_create :set_status
   belongs_to :cab
+
+  def self.unassigned
+    CabCall.where(:cab_id => nil)
+  end
 
   private
   def set_status
-    self.status = "active"
+    self.status = "pending"
   end
 end

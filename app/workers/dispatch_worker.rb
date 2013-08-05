@@ -1,44 +1,6 @@
 class DispatchWorker
   include SuckerPunch::Worker
 
-  def assign_cabs
-    unassigned_calls = CabCall.unassigned
-    unassigned_calls.each do |call|
-      direction = call.direction
-      from_floor = call.from_floor
-
-      # assign to first approaching cab
-      close_cabs = Cab.nearest(from_floor, direction)
-      unless close_cabs.empty?
-        call.cab = close_cabs.first
-        next
-      end
-
-      # otherwise assign to cab:
-      # 1. with least amount of floors left to travel
-      # 2. with closest final destination
-      # calculation needs to include queued calls after elevator turns around
-
-      cabs = Cab.by_proximity(from_floor)
-      cabs.each do |cab|
-        # if cab.
-      end
-    end
-  end
-
-  def advance_cabs
-    cabs = Cab.in_transit
-    cabs.each do |cab|
-      # current_floor = cab.current_floor - .25
-      # match = cab.calls.where(from_floor: current_floor)
-      # if match
-
-      # if 
-
-      # if current_floor == cab.calls.last
-    end
-  end
-
   def perform
     ActiveRecord::Base.connection_pool.with_connection do
       second = 0
@@ -47,14 +9,64 @@ class DispatchWorker
         puts "#{second}"
 
         assign_cabs
+        advance_cabs
 
-        # TODO: break should happen when:
+        # BREAK when:
         # 1. all cabs are idle
-        # 2. no unassigned calls
-        break if CabCall.unassigned.empty?
+        # 2. no unassigned calls left
+        break if Cab.joins(:calls).empty?
 
         sleep 1
       end
     end
   end
+
+  private
+  def assign_cabs
+    unassigned_calls = CabCall.unassigned
+    unassigned_calls.each do |call|
+      requested_direction = call.direction
+      requested_floor = call.requested_floor
+
+      # 1. try to assign to an approaching cab
+      near_approaching = Cab.near_approaching(requested_floor, requested_direction)
+      unless near_approaching.empty?
+        cab = near_approaching.first
+        call.cab = cab
+        call.save
+        next
+      end
+
+      # 2. else try to assign to nearest idle cab
+      near_idle = Cab.near_idle(requested_floor)
+      unless near_idle.empty?
+        cab = near_idle.first
+        call.cab = cab
+        # cab.current_direction = requested_direction
+        # cab.reserved_direction = requested_direction
+        # cab.save
+      end
+
+      # 3. else try to assign to nearest returning cab
+      # <insert profitable code here>
+
+      # 4. else skip cab assignment this round
+      # call is in queue it will be assigned in good time
+    end
+  end
+
+  def advance_cabs
+    cabs = Cab.in_transit #.joins(:calls)
+    puts "found #{cabs.size} cabs with calls"
+    cabs.each do |cab|
+      current_floor = cab.current_floor + (cab.current_direction / 4)
+      cab.current_floor = current_floor
+      cab.calls.where(requested_floor: 3).update_all(status: "complete")
+      if cab.calls.empty?
+        cab.status = "idle"
+      end
+      cab.save
+    end
+  end
+
 end
